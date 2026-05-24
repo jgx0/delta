@@ -51,12 +51,14 @@ pub fn dispatch(cli: Cli) -> Result<()> {
     }
 }
 
-pub(crate) fn load_or_analyze(path: &Path, limit: usize, refresh_cache: bool) -> Result<RepoSnapshot> {
+pub(crate) fn load_or_analyze(
+    path: &Path,
+    limit: usize,
+    refresh_cache: bool,
+) -> Result<RepoSnapshot> {
     let cache = SnapshotCache::new(path)?;
-    if !refresh_cache {
-        if let Some(snapshot) = cache.load_latest(path)? {
-            return Ok(snapshot);
-        }
+    if !refresh_cache && let Some(snapshot) = cache.load_latest(path)? {
+        return Ok(snapshot);
     }
 
     let snapshot = crate::analytics::engine::analyze(path, limit)?;

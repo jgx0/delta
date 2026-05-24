@@ -2,14 +2,12 @@ use std::collections::{HashMap, HashSet};
 use std::path::Path;
 
 use anyhow::Result;
-use chrono::{Datelike, Utc};
+use chrono::Utc;
 
 use crate::{
     analytics::{hotspots::build_hotspots, timeline::build_timeline},
     git::{discover::open_repository, history::walk_commits},
-    models::{
-        CommitSummary, ContributorStats, FileChurn, LanguageStat, RepoSnapshot, RepoStats,
-    },
+    models::{CommitSummary, ContributorStats, FileChurn, LanguageStat, RepoSnapshot, RepoStats},
 };
 
 pub fn analyze(path: &Path, limit: usize) -> Result<RepoSnapshot> {

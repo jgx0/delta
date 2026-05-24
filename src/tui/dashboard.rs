@@ -4,7 +4,7 @@ use anyhow::Result;
 use crossterm::{
     event::{self, Event, KeyCode},
     execute,
-    terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
+    terminal::{EnterAlternateScreen, LeaveAlternateScreen, disable_raw_mode, enable_raw_mode},
 };
 use ratatui::{
     prelude::*,
@@ -23,12 +23,11 @@ pub fn run(snapshot: &RepoSnapshot) -> Result<()> {
     let outcome = loop {
         terminal.draw(|f| render(f, snapshot))?;
 
-        if event::poll(Duration::from_millis(150))? {
-            if let Event::Key(key) = event::read()? {
-                if matches!(key.code, KeyCode::Char('q') | KeyCode::Esc) {
-                    break Ok(());
-                }
-            }
+        if event::poll(Duration::from_millis(150))?
+            && let Event::Key(key) = event::read()?
+            && matches!(key.code, KeyCode::Char('q') | KeyCode::Esc)
+        {
+            break Ok(());
         }
     };
 
@@ -52,7 +51,11 @@ fn render(frame: &mut Frame<'_>, snapshot: &RepoSnapshot) {
         snapshot.stats.lines_added,
         snapshot.stats.lines_deleted,
     ))
-    .block(Block::default().title("Delta Overview").borders(Borders::ALL));
+    .block(
+        Block::default()
+            .title("Delta Overview")
+            .borders(Borders::ALL),
+    );
     frame.render_widget(summary, chunks[0]);
 
     let bottom = Layout::default()
@@ -66,8 +69,11 @@ fn render(frame: &mut Frame<'_>, snapshot: &RepoSnapshot) {
         .take(10)
         .map(|c| ListItem::new(format!("{} ({})", c.name, c.commit_count)))
         .collect::<Vec<_>>();
-    let left = List::new(contributors)
-        .block(Block::default().title("Top Contributors").borders(Borders::ALL));
+    let left = List::new(contributors).block(
+        Block::default()
+            .title("Top Contributors")
+            .borders(Borders::ALL),
+    );
 
     let hotspots = snapshot
         .hotspots
@@ -75,8 +81,7 @@ fn render(frame: &mut Frame<'_>, snapshot: &RepoSnapshot) {
         .take(10)
         .map(|h| ListItem::new(format!("{:.3} {}", h.score, h.path)))
         .collect::<Vec<_>>();
-    let right = List::new(hotspots)
-        .block(Block::default().title("Hotspots").borders(Borders::ALL));
+    let right = List::new(hotspots).block(Block::default().title("Hotspots").borders(Borders::ALL));
 
     frame.render_widget(left, bottom[0]);
     frame.render_widget(right, bottom[1]);

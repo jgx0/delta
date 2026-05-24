@@ -6,7 +6,10 @@ pub fn export(snapshot: &RepoSnapshot) -> String {
     out.push_str("## Repository Stats\n\n");
     out.push_str(&format!("- Commits: {}\n", snapshot.stats.commit_count));
     out.push_str(&format!("- Lines added: {}\n", snapshot.stats.lines_added));
-    out.push_str(&format!("- Lines deleted: {}\n", snapshot.stats.lines_deleted));
+    out.push_str(&format!(
+        "- Lines deleted: {}\n",
+        snapshot.stats.lines_deleted
+    ));
     out.push_str("\n## Top Contributors\n\n");
 
     for c in snapshot.contributors.iter().take(10) {

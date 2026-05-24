@@ -15,7 +15,12 @@ fn sparkline(value: u64, max: u64) -> String {
 
 pub fn run(path: &Path, limit: usize, refresh_cache: bool) -> Result<()> {
     let snapshot = load_or_analyze(path, limit, refresh_cache)?;
-    let max = snapshot.timeline.iter().map(|d| d.commits).max().unwrap_or(0);
+    let max = snapshot
+        .timeline
+        .iter()
+        .map(|d| d.commits)
+        .max()
+        .unwrap_or(0);
     let rows = snapshot
         .timeline
         .iter()

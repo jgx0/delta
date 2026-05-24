@@ -9,7 +9,10 @@ pub fn run(path: &Path, limit: usize, refresh_cache: bool) -> Result<()> {
     let rows = vec![
         vec!["Commits".into(), snapshot.stats.commit_count.to_string()],
         vec!["Lines added".into(), snapshot.stats.lines_added.to_string()],
-        vec!["Lines deleted".into(), snapshot.stats.lines_deleted.to_string()],
+        vec![
+            "Lines deleted".into(),
+            snapshot.stats.lines_deleted.to_string(),
+        ],
         vec![
             "Repository age (days)".into(),
             snapshot.stats.repository_age_days.to_string(),

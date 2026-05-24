@@ -23,10 +23,7 @@ pub fn run(path: &Path, limit: usize, refresh_cache: bool) -> Result<()> {
 
     println!(
         "{}",
-        render_table(
-            &["Contributor", "Commits", "+", "-", "Files"],
-            &rows,
-        )
+        render_table(&["Contributor", "Commits", "+", "-", "Files"], &rows,)
     );
     Ok(())
 }

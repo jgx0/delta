@@ -43,7 +43,11 @@ pub fn build_hotspots(files: &[FileChurn]) -> Vec<Hotspot> {
         })
         .collect::<Vec<_>>();
 
-    hotspots.sort_by(|a, b| b.score.partial_cmp(&a.score).unwrap_or(std::cmp::Ordering::Equal));
+    hotspots.sort_by(|a, b| {
+        b.score
+            .partial_cmp(&a.score)
+            .unwrap_or(std::cmp::Ordering::Equal)
+    });
     hotspots
 }
 

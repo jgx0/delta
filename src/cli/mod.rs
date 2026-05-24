@@ -3,7 +3,11 @@ use std::path::PathBuf;
 use clap::{Parser, Subcommand};
 
 #[derive(Debug, Parser)]
-#[command(name = "delta", version, about = "Terminal-first Git analytics platform")]
+#[command(
+    name = "delta",
+    version,
+    about = "Terminal-first Git analytics platform"
+)]
 pub struct Cli {
     #[command(subcommand)]
     pub command: Command,

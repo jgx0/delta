@@ -1,22 +1,30 @@
-use std::path::Path;
-
 use anyhow::Result;
 
-use crate::{commands::load_or_analyze, tui::dashboard};
+use crate::{
+    cli::CommonArgs,
+    commands::{emit_json, load_or_analyze},
+    models::TimelineGranularity,
+    tui::dashboard,
+};
 
-pub fn run(path: &Path, limit: usize, refresh_cache: bool, tui: bool) -> Result<()> {
-    let snapshot = load_or_analyze(path, limit, refresh_cache)?;
+pub fn run(common: &CommonArgs, tui: bool) -> Result<()> {
+    let snapshot = load_or_analyze(common, TimelineGranularity::Day)?;
+
     if tui {
-        dashboard::run(&snapshot)?;
-    } else {
-        println!(
-            "Scanned {} commits | +{} -{} | contributors: {} | files: {}",
-            snapshot.stats.commit_count,
-            snapshot.stats.lines_added,
-            snapshot.stats.lines_deleted,
-            snapshot.contributors.len(),
-            snapshot.file_churn.len()
-        );
+        return dashboard::run(&snapshot);
     }
+
+    if common.json {
+        return emit_json(&snapshot);
+    }
+
+    println!(
+        "Scanned {} commits | +{} -{} | contributors: {} | files: {}",
+        snapshot.stats.commit_count,
+        snapshot.stats.lines_added,
+        snapshot.stats.lines_deleted,
+        snapshot.contributors.len(),
+        snapshot.file_churn.len()
+    );
     Ok(())
 }

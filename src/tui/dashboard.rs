@@ -40,16 +40,17 @@ pub fn run(snapshot: &RepoSnapshot) -> Result<()> {
 fn render(frame: &mut Frame<'_>, snapshot: &RepoSnapshot) {
     let chunks = Layout::default()
         .direction(Direction::Vertical)
-        .constraints([Constraint::Length(5), Constraint::Min(8)])
+        .constraints([Constraint::Length(6), Constraint::Min(8), Constraint::Length(1)])
         .split(frame.area());
 
     let summary = Paragraph::new(format!(
-        "commits: {}   contributors: {}   files: {}   +{} / -{}",
+        "commits: {}   contributors: {}   files: {}   +{} / -{}   bus factor: {}",
         snapshot.stats.commit_count,
         snapshot.contributors.len(),
         snapshot.file_churn.len(),
         snapshot.stats.lines_added,
         snapshot.stats.lines_deleted,
+        snapshot.stats.bus_factor.bus_factor,
     ))
     .block(
         Block::default()
@@ -85,4 +86,8 @@ fn render(frame: &mut Frame<'_>, snapshot: &RepoSnapshot) {
 
     frame.render_widget(left, bottom[0]);
     frame.render_widget(right, bottom[1]);
+
+    let footer = Paragraph::new("q / Esc to quit")
+        .style(Style::default().fg(Color::DarkGray));
+    frame.render_widget(footer, chunks[2]);
 }

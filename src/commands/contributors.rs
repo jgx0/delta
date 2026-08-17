@@ -1,11 +1,19 @@
-use std::path::Path;
-
 use anyhow::Result;
 
-use crate::{commands::load_or_analyze, utils::table::render_table};
+use crate::{
+    cli::CommonArgs,
+    commands::{emit_json, load_or_analyze},
+    models::TimelineGranularity,
+    utils::table::render_table,
+};
 
-pub fn run(path: &Path, limit: usize, refresh_cache: bool) -> Result<()> {
-    let snapshot = load_or_analyze(path, limit, refresh_cache)?;
+pub fn run(common: &CommonArgs) -> Result<()> {
+    let snapshot = load_or_analyze(common, TimelineGranularity::Day)?;
+
+    if common.json {
+        return emit_json(&snapshot.contributors);
+    }
+
     let rows = snapshot
         .contributors
         .iter()
@@ -16,6 +24,7 @@ pub fn run(path: &Path, limit: usize, refresh_cache: bool) -> Result<()> {
                 c.commit_count.to_string(),
                 c.lines_added.to_string(),
                 c.lines_deleted.to_string(),
+                c.total_churn().to_string(),
                 c.files_touched.to_string(),
             ]
         })
@@ -23,7 +32,7 @@ pub fn run(path: &Path, limit: usize, refresh_cache: bool) -> Result<()> {
 
     println!(
         "{}",
-        render_table(&["Contributor", "Commits", "+", "-", "Files"], &rows,)
+        render_table(&["Contributor", "Commits", "+", "-", "Churn", "Files"], &rows)
     );
     Ok(())
 }

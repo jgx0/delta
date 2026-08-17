@@ -1,8 +1,11 @@
-use std::path::Path;
-
 use anyhow::Result;
 
-use crate::{commands::load_or_analyze, utils::table::render_table};
+use crate::{
+    cli::CommonArgs,
+    commands::{emit_json, load_or_analyze},
+    models::TimelineGranularity,
+    utils::table::render_table,
+};
 
 fn sparkline(value: u64, max: u64) -> String {
     const BLOCKS: &[char] = &['▁', '▂', '▃', '▄', '▅', '▆', '▇', '█'];
@@ -13,8 +16,13 @@ fn sparkline(value: u64, max: u64) -> String {
     BLOCKS[idx.min(BLOCKS.len() - 1)].to_string()
 }
 
-pub fn run(path: &Path, limit: usize, refresh_cache: bool) -> Result<()> {
-    let snapshot = load_or_analyze(path, limit, refresh_cache)?;
+pub fn run(common: &CommonArgs, granularity: TimelineGranularity) -> Result<()> {
+    let snapshot = load_or_analyze(common, granularity)?;
+
+    if common.json {
+        return emit_json(&snapshot.timeline);
+    }
+
     let max = snapshot
         .timeline
         .iter()

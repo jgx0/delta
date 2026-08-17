@@ -11,27 +11,19 @@ pub fn run(common: &CommonArgs) -> Result<()> {
     let snapshot = load_or_analyze(common, TimelineGranularity::Day)?;
 
     if common.json {
-        return emit_json(&snapshot.hotspots);
+        return emit_json(&snapshot.coupling);
     }
 
     let rows = snapshot
-        .hotspots
+        .coupling
         .iter()
-        .take(25)
-        .map(|h| {
-            vec![
-                h.path.clone(),
-                format!("{:.3}", h.score),
-                h.commit_count.to_string(),
-                h.churn.to_string(),
-                h.contributor_count.to_string(),
-            ]
-        })
+        .take(40)
+        .map(|c| vec![c.file_a.clone(), c.file_b.clone(), c.co_changes.to_string()])
         .collect::<Vec<_>>();
 
     println!(
         "{}",
-        render_table(&["File", "Score", "Commits", "Churn", "Contrib"], &rows)
+        render_table(&["File A", "File B", "Co-changes"], &rows)
     );
     Ok(())
 }
